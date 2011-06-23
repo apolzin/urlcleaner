@@ -5,6 +5,7 @@ import vo.DomainKey
 import util.control.Breaks._
 import java.net.URLEncoder
 import java.io.BufferedReader
+import org.datanucleus.store.mapped.expression.ExpressionLogicSetAdapter
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,38 +21,42 @@ class Unshitify extends HttpServlet {
     resp.setContentType("text/plain")
 
     if(req.getParameter("url") != null){
-      val pm = PMF.get.getPersistenceManager
+      if(req.getParameter("url").matches(".*[&?].*")){
+        val pm = PMF.get.getPersistenceManager
 
-      var decodedURL = req.getQueryString.replace("url=","")
+        var decodedURL = req.getQueryString.replace("url=","")
 
-      var domainKey = new DomainKey(decodedURL)
-      val key = domainKey.createKey
+        var domainKey = new DomainKey(decodedURL)
+        val key = domainKey.createKey
 
-      val originalHeader = header(escapeURL(decodedURL))
+        val originalHeader = header(escapeURL(decodedURL))
 
-      try{
-         domainKey = pm.getObjectById(classOf[DomainKey], key)
-      } catch {
-        case e => ""
-      }
+        try{
+          domainKey = pm.getObjectById(classOf[DomainKey], key)
+        } catch {
+          case e => ""
+        }
 
-      breakable {
-        while(decodedURL.matches(".*[?&].*")){
-          val opts = extractLastQueryPair(decodedURL)
-          decodedURL = decodedURL.replaceFirst("[&?][^&^?^=]+=[^&^?^=]+$","")
-          if(!domainKey.hasBannedKey(opts(0))){
-            var testHeader = header(escapeURL(decodedURL))
-            if(testHeader == originalHeader){
-              domainKey.addToBannedKeys(opts(0))
-            } else {
-              break()
+        breakable {
+          while(decodedURL.matches(".*[?&].*")){
+            val opts = extractLastQueryPair(decodedURL)
+            decodedURL = decodedURL.replaceFirst("[&?][^&^?^=]+=[^&^?^=]+$","")
+            if(!domainKey.hasBannedKey(opts(0))){
+              var testHeader = header(escapeURL(decodedURL))
+              if(testHeader == originalHeader){
+                domainKey.addToBannedKeys(opts(0))
+              } else {
+                break()
+              }
             }
           }
         }
+        pm.makePersistent(domainKey)
+        pm.close()
+        resp.getWriter.println(decodedURL)
+      } else{
+        resp.getWriter.println(req.getParameter("url"))
       }
-      pm.makePersistent(domainKey)
-      pm.close()
-      resp.getWriter.println(decodedURL)
     }
     else {
       resp.getWriter.println("no url supplied")
