@@ -5,15 +5,7 @@ import vo.DomainKey
 import util.control.Breaks._
 import java.net.URLEncoder
 import java.io.BufferedReader
-import org.datanucleus.store.mapped.expression.ExpressionLogicSetAdapter
 
-/**
- * Created by IntelliJ IDEA.
- * User: alexander
- * Date: 6/23/11
- * Time: 10:02 PM
- * To change this template use File | Settings | File Templates.
- */
 
 class Unshitify extends HttpServlet {
     override def doGet(req: HttpServletRequest, resp: HttpServletResponse) {
@@ -41,7 +33,7 @@ class Unshitify extends HttpServlet {
           while(decodedURL.matches(".*[?&].*")){
             val opts = extractLastQueryPair(decodedURL)
             decodedURL = decodedURL.replaceFirst("[&?][^&^?^=]+=[^&^?^=]+$","")
-            if(!domainKey.hasBannedKey(opts(0))){
+            if(!domainKey.hasBannedKey(opts(0)) && !opts(0).matches("utm_.*")){
               var testHeader = header(escapeURL(decodedURL))
               if(testHeader == originalHeader){
                 domainKey.addToBannedKeys(opts(0))

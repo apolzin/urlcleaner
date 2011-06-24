@@ -13,5 +13,12 @@
    <servlet-name>unshitify</servlet-name>
    <url-pattern>/unshitify</url-pattern>
 </servlet-mapping>
-
+<servlet>
+  <servlet-name>unshorten</servlet-name>
+  <servlet-class>apolzin.unshitify.Unshorten</servlet-class>
+</servlet>
+<servlet-mapping>
+   <servlet-name>unshorten</servlet-name>
+   <url-pattern>/unshorten</url-pattern>
+</servlet-mapping>
 </web-app>

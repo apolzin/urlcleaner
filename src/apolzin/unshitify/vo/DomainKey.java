@@ -24,6 +24,8 @@ public class DomainKey {
 	@Persistent
 	private ArrayList<String> bannedKeys;
     @Persistent
+    private ArrayList<String> allowedKeys;
+    @Persistent
     private String domain;
 
 	public DomainKey(String url)
@@ -50,9 +52,12 @@ public class DomainKey {
         return bannedKeys;
     }
 
+
+
     public void addToBannedKeys(String key)
     {
-        try{
+        try
+        {
             bannedKeys.add(key);
         }
         catch(Exception e)
@@ -72,6 +77,30 @@ public class DomainKey {
             return false;
         }
 
+    }
+
+    public void addToAllowedKeys(String key)
+    {
+        try
+        {
+            allowedKeys.add(key);
+        }
+        catch(Exception e)
+        {
+
+        }
+    }
+
+    public boolean hasAllowedKey(String key)
+    {
+        try
+        {
+            return allowedKeys.contains(key);
+        }
+        catch(Exception e)
+        {
+            return false;
+        }
     }
 
     public void setBannedKeys(ArrayList<String> keys)
