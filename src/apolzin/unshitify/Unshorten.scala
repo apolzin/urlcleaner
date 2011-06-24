@@ -8,7 +8,7 @@ class Unshorten extends HttpServlet{
   override def doGet(req: HttpServletRequest, resp: HttpServletResponse) {
     if(req.getParameter("url") != null){
       val head = getHead(escapeURL(req.getParameter("url")))
-      if(head != null){
+      if(head != null && !req.getParameter("url").matches(".*snipr.*")){
         resp.getWriter.println(head)
       } else {
         resp.getWriter.println(req.getParameter("url"))
