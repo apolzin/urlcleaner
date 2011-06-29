@@ -19,13 +19,17 @@ class Unshorten extends HttpServlet{
   }
 
   def getHead(url: String) = {
-    val urlObj = new URL(url)
-    val con = urlObj.openConnection.asInstanceOf[HttpURLConnection]
-    con.setRequestMethod("HEAD")
-    con.setDoOutput(true)
-    con.setInstanceFollowRedirects(false)
-    con.connect()
-    con.getHeaderField("Location")
+    try{
+      val urlObj = new URL(url)
+      val con = urlObj.openConnection.asInstanceOf[HttpURLConnection]
+      con.setRequestMethod("HEAD")
+      con.setDoOutput(true)
+      con.setInstanceFollowRedirects(false)
+      con.connect()
+      con.getHeaderField("Location")
+    } catch {
+      case e => url
+    }
   }
 
   def escapeURL(url: String) = {
