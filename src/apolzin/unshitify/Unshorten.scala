@@ -12,8 +12,12 @@ class Unshorten extends HttpServlet{
         if(req.getParameter("url").matches(".*t\\.co\\/.*")){
           val tco_head = getHead(head)
           if(tco_head != null){
-            resp.getWriter.println(tco_head)
-          } else {
+            if(tco_head.matches("^http.*")){
+              resp.getWriter.println(tco_head)
+            } else {
+              resp.getWriter.println(head)
+            }
+           } else {
             resp.getWriter.println(head)
           }
         } else {
